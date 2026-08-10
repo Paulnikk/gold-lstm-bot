@@ -142,10 +142,29 @@ async def get_balance():
     ws = await ws_connect()
     try:
         await ws.send(json.dumps({"authorize": DERIV_TOKEN}))
-        await ws.recv()
+        auth_resp = json.loads(await ws.recv())
+
+        if "error" in auth_resp:
+            print(f"Deriv authorization error: {auth_resp['error']}", flush=True)
+            return None
+
+        if "authorize" not in auth_resp:
+            print(f"Unexpected authorization response: {auth_resp}", flush=True)
+            return None
+
         await ws.send(json.dumps({"balance": 1}))
-        resp = await ws.recv()
-        return float(json.loads(resp)['balance']['balance'])
+        balance_resp = json.loads(await ws.recv())
+
+        if "error" in balance_resp:
+            print(f"Deriv balance error: {balance_resp['error']}", flush=True)
+            return None
+
+        if "balance" not in balance_resp:
+            print(f"Unexpected balance response: {balance_resp}", flush=True)
+            return None
+
+        return float(balance_resp["balance"]["balance"])
+
     finally:
         await ws.close()
 
@@ -217,10 +236,14 @@ async def trade_cycle():
             f"proceeding with trade."
         )
 
-    try:
+       try:
         balance = await get_balance()
 
-        if balance < MIN_BALANCE:
+        if balance is None:
+            send_telegram("❌ Could not retrieve Deriv account balance. No trade executed.")
+            return
+
+        if balance < MIN_BALANCE: 
             send_telegram(
                 f"❌ Balance ${balance:.2f} is below minimum ${MIN_BALANCE:.2f}."
             )
