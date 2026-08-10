@@ -22,7 +22,7 @@ TWELVE_API_KEY = os.getenv("TWELVE_API_KEY")
 
 # === CONFIG ===
 MAX_TRADES_PER_DAY = 5
-TRADE_INTERVAL = 3600  # seconds
+TRADE_INTERVAL = 60 # seconds
 LOG_FILE = 'data/trade_log.csv'
 MAX_STAKE_PERCENT = 0.2
 MAX_STAKE = 1000
