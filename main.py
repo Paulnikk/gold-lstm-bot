@@ -235,7 +235,7 @@ async def trade_cycle():
             f"🔎 ADX {adx:.2f} low but confidence {confidence:.2f} high — "
             f"proceeding with trade."
         )
-try:
+    try:
         balance = await get_balance()
 
         if balance is None:
