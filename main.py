@@ -44,7 +44,7 @@ def send_telegram(msg):
         requests.post(
             f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
             data={"chat_id": TELEGRAM_CHAT_ID, "text": msg},
-            timeout=15
+            timeout=30
         )
     except Exception as e:
         print("Telegram error:", e, flush=True)
